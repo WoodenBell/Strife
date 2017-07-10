@@ -240,6 +240,7 @@ public class EditorController {
 	}
 
 	private void saveFile(EditItem f) {
+		f.setContent(Arrays.asList(app.getEditorTexts().get(f)));
 		if(f.isAFile()) {
 			if(f.isFileSaved()) {
 				if(!model.save(f)) {
@@ -277,6 +278,7 @@ public class EditorController {
 	}
 
 	private void saveFileAs(EditItem f) {
+		f.setContent(Arrays.asList(app.getEditorTexts().get(f)));
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Save file " + f.getFileName());
 		FileChooser.ExtensionFilter allFilter =
@@ -301,6 +303,7 @@ public class EditorController {
 				 new FileChooser.ExtensionFilter("Python modules (*.py)", "*.py");
 		 fc.getExtensionFilters().addAll(allFilter, txtFilter, mdFilter, cssFilter, jsFilter, htmlFilter, jsonFilter,
 				 phpFilter, javaFilter, pyFilter);
+		 fc.setInitialFileName(f.getFileName());
 		 File sf =  fc.showSaveDialog(new Stage());
 		 if(sf == null) return;
 		 Path p = Paths.get(sf.getAbsolutePath());
@@ -486,6 +489,7 @@ public class EditorController {
 			    public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
 			        EditItem f = editList.getSelectionModel().getSelectedItem();
 			        if(f != null && !isFileTextChanging)  f.setFileSaved(false);
+			        app.getEditorTexts().put(currFile, newValue);
 			        editList.refresh();
 			    }
 			});

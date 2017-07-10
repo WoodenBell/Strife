@@ -31,6 +31,7 @@ public class EditorModel {
 		} else {
 			try {
 				Files.write(choosenPath, f.getContent(), StandardOpenOption.CREATE);
+				f.setFileSaved(true);
 				return true;
 			} catch (IOException e) {
 				e.printStackTrace();
