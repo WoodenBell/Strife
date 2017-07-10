@@ -23,6 +23,9 @@ public class MainApp extends Application {
 	    private Scene scene;
 	    private ObservableList<EditItem> edits;
 	    private HashMap<EditItem, String> editorText;
+	    public final static String author = "WoodenBell";
+	    public final static String version = "1.0";
+	    public final static String authorEmail = "codingcookie@gmail.com";
 
 	    @Override
 	    public void start(Stage primaryStage) {

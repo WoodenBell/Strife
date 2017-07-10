@@ -219,7 +219,7 @@ public class EditorController {
 		Alert info = new Alert(Alert.AlertType.INFORMATION);
 		info.setHeaderText(null);
 		info.setTitle("About");
-		info.setContentText("Author: WoodenBell\nE-Mail: codingcookie@gmail.com\nVersion: 0.0.1");
+		info.setContentText("Author: " + MainApp.author + "\nE-Mail: " + MainApp.authorEmail + " \nVersion: " + MainApp.version);
 		info.show();
 
 	}
