@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" stylesheets="@LightGrayTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.woodenbell.strife.view.EditorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" stylesheets="@LightGrayTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.woodenbell.strife.view.EditorController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -40,11 +40,11 @@
       </MenuBar>
    </top>
    <center>
-   <AnchorPane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <AnchorPane prefHeight="576.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ScrollPane prefHeight="768.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <ScrollPane prefHeight="576.0" prefWidth="750.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
-                  <TextArea fx:id="textEditor" prefHeight="768.0" prefWidth="1000.0">
+                  <TextArea fx:id="textEditor" prefHeight="576.0" prefWidth="750.0">
                      <font>
                         <Font size="18.0" />
                      </font></TextArea>
@@ -57,11 +57,11 @@
 
    </left>
    <left>
-      <AnchorPane prefHeight="800.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="600.0" prefWidth="150.0" BorderPane.alignment="CENTER">
          <children>
-            <ScrollPane layoutY="-2.0" prefHeight="770.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <ScrollPane layoutY="-2.0" prefHeight="600.0" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <content>
-                <ListView fx:id="editList" prefHeight="800.0" prefWidth="180.0" BorderPane.alignment="CENTER" />
+                <ListView fx:id="editList" prefHeight="600.0" prefWidth="135.0" BorderPane.alignment="CENTER" />
               </content>
             </ScrollPane>
          </children>
