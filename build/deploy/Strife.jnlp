@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Strife.jar" size="17279" download="eager" />
+    <jar href="Strife.jar" size="17252" download="eager" />
   </resources>
   <jfx:javafx-desc  width="0" height="0" main-class="io.github.woodenbell.strife.MainApp"  name="Strife" />
   <update check="background"/>

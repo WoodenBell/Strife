@@ -5,7 +5,6 @@
 			<filelist>
 				<file name="${java.home}\..\lib\ant-javafx.jar"/>
 				<file name="${java.home}\lib\jfxrt.jar"/>
-				<file name="${basedir}"/>
 			</filelist>
 		</path>
 
@@ -85,14 +84,12 @@
 		<fx:resources id="appRes">
 			<fx:fileset dir="dist" includes="Strife.jar"/>
 			<fx:fileset dir="dist" includes="libs/*"/>
-			<fx:fileset dir="dist" includes="resources/**"/>
 		</fx:resources>
 
 		<fx:application id="fxApplication"
 			name="Strife"
 			mainClass="io.github.woodenbell.strife.MainApp"
 			toolkit="fx"
-			version="1.0"
 		/>
 
 		<mkdir dir="build/classes/META-INF" />
@@ -122,7 +119,7 @@
 			includeDT="false"
 			offlineAllowed="true"
 			outdir="${basedir}/deploy"
-			outfile="Strife" nativeBundles="exe"
+			outfile="Strife" nativeBundles="all"
 			updatemode="background" >
 
 			<fx:platform basedir="${java.home}"/>
