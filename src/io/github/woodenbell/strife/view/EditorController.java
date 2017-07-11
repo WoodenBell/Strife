@@ -3,40 +3,52 @@ package io.github.woodenbell.strife.view;
 
 
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Optional;
 
 import io.github.woodenbell.strife.MainApp;
 import io.github.woodenbell.strife.model.EditFile;
 import io.github.woodenbell.strife.model.EditItem;
 import io.github.woodenbell.strife.model.EditorModel;
 import io.github.woodenbell.strife.model.IOResult;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Optional;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import javafx.util.Pair;
 
 public class EditorController {
 
@@ -63,16 +75,63 @@ public class EditorController {
 	private MenuItem pasteItem;
 	@FXML
 	private MenuItem deleteItem;
+	@FXML
+	private ScrollPane listScrollPane;
 
+	private boolean checkFileName(String fName) {
+		if(fName.length() < 1) return false;
+		String[] invalidChars = {"?", "\\", "/", ":", "<", ">", "|", ":", "\"", "*"};
+		String[] invalidNames = {
+				"CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7",
+				"COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"};
+		for(String s1:invalidChars) {
+			if(fName.contains(s1)) return false;
+		}
+		for(String s2:invalidNames) {
+			if(fName.equals(s2)) return false;
+		}
+		return true;
+		}
 	@FXML
 	private void onNew() {
-		TextInputDialog d = new TextInputDialog();
+		Dialog<Pair<String, String>> d = new Dialog<>();
+
 		d.setTitle("New file");
 		d.setHeaderText("Choose the file name");
 		d.setContentText("");
-		Optional<String> res = d.showAndWait();
+		ButtonType ok = new ButtonType("Create", ButtonData.OK_DONE);
+		ButtonType cancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		d.getDialogPane().getButtonTypes().addAll(ok, cancel);
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		TextField fileName = new TextField();
+		ComboBox<String> extension = new ComboBox<String>();
+		ObservableList<String> supportedTypes = FXCollections.observableArrayList();
+		supportedTypes.setAll(".txt", ".md", ".config", ".ini", ".xml", ".html", ".js", ".css",
+				 ".py", ".java");
+		extension.setItems(supportedTypes);
+		extension.getSelectionModel().selectFirst();
+		grid.add(fileName, 0, 0);
+		grid.add(extension, 1, 0);
+		d.getDialogPane().setContent(grid);
+		d.setResultConverter(dialogButton -> {
+			if(dialogButton == ok) {
+				return new Pair<>(fileName.getText(), extension.getSelectionModel().getSelectedItem());
+			}
+			return null;
+		});
+		Optional<Pair<String, String>> res = d.showAndWait();
 		if(res.isPresent()) {
-			loadNewFile(new EditItem(res.get()));
+			if(checkFileName(res.get().getKey())) {
+				loadNewFile(new EditItem(res.get().getKey() + res.get().getValue()));
+			} else {
+				Alert warning = new Alert(AlertType.WARNING);
+				warning.setTitle("Create file");
+				warning.setHeaderText("Cannot create file");
+				warning.setContentText("Invalid file name");
+				warning.show();
+			}
 		} else {
 			return;
 		}
@@ -83,6 +142,28 @@ public class EditorController {
 		File f;
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Choose file to open");
+		FileChooser.ExtensionFilter allFilter =
+				 new FileChooser.ExtensionFilter("All files", "*");
+		 FileChooser.ExtensionFilter txtFilter =
+				 new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+		 FileChooser.ExtensionFilter mdFilter =
+				 new FileChooser.ExtensionFilter("Markdown files (*.md)", "*.md");
+		 FileChooser.ExtensionFilter cssFilter =
+				 new FileChooser.ExtensionFilter("CSS files (*.css)", "*.css");
+		 FileChooser.ExtensionFilter jsFilter =
+				 new FileChooser.ExtensionFilter("Javascript files (*.js)", "*.js");
+		 FileChooser.ExtensionFilter htmlFilter =
+				 new FileChooser.ExtensionFilter("HTML documents (*.html)", "*.html");
+		 FileChooser.ExtensionFilter jsonFilter =
+				 new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
+		 FileChooser.ExtensionFilter phpFilter =
+				 new FileChooser.ExtensionFilter("PHP files (*.php)", "*.php");
+		 FileChooser.ExtensionFilter javaFilter =
+				 new FileChooser.ExtensionFilter("JAVA files (*.java)", "*.java");
+		 FileChooser.ExtensionFilter pyFilter =
+				 new FileChooser.ExtensionFilter("Python modules (*.py)", "*.py");
+		 fc.getExtensionFilters().addAll(allFilter, txtFilter, mdFilter, cssFilter, jsFilter, htmlFilter, jsonFilter,
+				 phpFilter, javaFilter, pyFilter);
 		f = fc.showOpenDialog(new Stage());
 		if(f == null) return;
 		loadFile(model.load(Paths.get(f.getAbsolutePath())));
@@ -124,9 +205,13 @@ public class EditorController {
 			alert.setContentText("There are no files to be saved");
 			alert.show();
 		} else {
+			boolean atLeastOne = false;
 			for(EditItem i:app.getEditItems()) {
-				saveFile(i);
+				if(saveFile(i) && !atLeastOne) {
+					atLeastOne = true;
+				}
 			}
+			if(!atLeastOne) return;
 			Alert info = new Alert(AlertType.INFORMATION);
 			info.setHeaderText("Save files");
 			info.setTitle("Success");
@@ -217,6 +302,9 @@ public class EditorController {
 	@FXML
 	private void onAbout() {
 		Alert info = new Alert(Alert.AlertType.INFORMATION);
+		Stage stage = (Stage) info.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(new Image("file:resources/images/Info-icon-32.png"));
+		info.setGraphic(new ImageView("file:resources/images/Strife-icon-64.png"));
 		info.setHeaderText(null);
 		info.setTitle("About");
 		info.setContentText("Author: " + MainApp.author + "\nE-Mail: " + MainApp.authorEmail + " \nVersion: " + MainApp.version);
@@ -239,7 +327,7 @@ public class EditorController {
 		this.model = model;
 	}
 
-	private void saveFile(EditItem f) {
+	private boolean saveFile(EditItem f) {
 		f.setContent(Arrays.asList(app.getEditorTexts().get(f)));
 		if(f.isAFile()) {
 			if(f.isFileSaved()) {
@@ -251,10 +339,11 @@ public class EditorController {
 					 " please try again");
 					error.show();
 					removeFile(f, true);
-					return;
+					return false;
 				} else {
 					f.setFileSaved(true);
 					editList.refresh();
+					return true;
 				}
 			} else {
 				if(!model.save(f)) {
@@ -265,18 +354,19 @@ public class EditorController {
 					 " please try again");
 					error.show();
 					removeFile(f, true);
-					return;
+					return false;
 				} else {
 					f.setFileSaved(true);
 					editList.refresh();
+					return true;
 				}
 			}
 		} else {
-			saveFileAs(f);
+			return saveFileAs(f);
 		}
 	}
 
-	private void saveFileAs(EditItem f) {
+	private boolean saveFileAs(EditItem f) {
 		f.setContent(Arrays.asList(app.getEditorTexts().get(f)));
 		FileChooser fc = new FileChooser();
 		fc.setTitle("Save file " + f.getFileName());
@@ -304,12 +394,13 @@ public class EditorController {
 				 phpFilter, javaFilter, pyFilter);
 		 fc.setInitialFileName(f.getFileName());
 		 File sf =  fc.showSaveDialog(new Stage());
-		 if(sf == null) return;
+		 if(sf == null) return false;
 		 Path p = Paths.get(sf.getAbsolutePath());
 		 if(model.saveAs(f, p)) {
 			 EditFile ef = model.load(p).getResult();
 			 f.setEditFile(ef);
 			 editList.refresh();
+			 return true;
 		 } else {
 			 Alert error = new Alert(AlertType.ERROR);
 			error.setHeaderText("Save error");
@@ -318,7 +409,7 @@ public class EditorController {
 				" please try again");
 			error.show();
 			removeFile(f, true);
-			return;
+			return false;
 		 }
 
 	}
@@ -329,12 +420,15 @@ public class EditorController {
 	public void setMainApp(MainApp app) {
 		this.app = app;
 		editList.setItems(app.getEditItems());
+		Platform.setImplicitExit(false);
 		app.getPrimaryStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
-
 			@Override
 			public void handle(WindowEvent event) {
 				for(EditItem i:app.getEditItems()) {
-					closeFile(i, false);
+					 if(!closeFile(i, false)) {
+						 event.consume();
+						 return;
+					 }
 				}
 				Platform.exit();
 			}
@@ -342,14 +436,18 @@ public class EditorController {
 		 });
 	}
 
-	private void closeFile(EditItem f, boolean modifyList) {
+	private boolean closeFile(EditItem f, boolean modifyList) {
 		if(f.isFileSaved()) {
 			currFile = null;
 			removeFile(f, modifyList);
+			return true;
 		} else {
 			Alert cl = new Alert(AlertType.CONFIRMATION);
+			cl.setGraphic(new ImageView("file:resources/images/Save-icon-64.png"));
+			Stage s = (Stage) cl.getDialogPane().getScene().getWindow();
+			s.getIcons().add(new Image("file:resources/images/Interrogation-icon-32.png"));
 			cl.setTitle("Close file");
-			cl.setHeaderText("Close " + f.getFileName() + "?");
+			cl.setHeaderText("Save " + f.getFileName() + "?");
 			cl.setContentText("The file has not been saved, do you want to save it before closing?");
 			ButtonType yes = new ButtonType("Yes");
 			ButtonType no = new ButtonType("No");
@@ -360,12 +458,14 @@ public class EditorController {
 				saveFile(f);
 				currFile = null;
 				removeFile(f, modifyList);
+				return true;
 			} else {
 				if(result.get() == no) {
 					currFile = null;
 					removeFile(f, modifyList);
+					return true;
 				} else {
-					return;
+					return false;
 				}
 			}
 
@@ -444,12 +544,18 @@ public class EditorController {
 			app.getEditItems().add(item);
 			editList.setItems(this.app.getEditItems());
 			app.getEditorTexts().put(item, strContent);
+			if(!textEditor.isEditable()) textEditor.setEditable(true);
 			if(currFile == null) {
-				textEditor.setEditable(true);
 				loadTextFileToEditor(item);
 			} else {
 				loadTextFileToEditor(currFile, item);
 			}
+		} else {
+			Alert error = new Alert(AlertType.ERROR);
+			error.setHeaderText("Open error");
+			error.setTitle("Error");
+			error.setContentText("An error ocurred while trying to open the file");
+			error.show();
 		}
 
 	}
@@ -470,8 +576,9 @@ public class EditorController {
 	                    protected void updateItem(EditItem t, boolean bln) {
 	                        super.updateItem(t, bln);
 	                        if (t != null) {
-	                        	String s = t.isFileSaved() ? "" : "*";
-	                            setText(t.getFileName() + s);
+	                        	String s = t.isFileSaved() ? " " : "*";
+	                        	String n = t.getFileName().length() > 15 ? t.getFileName().substring(0, 16) + "..." : t.getFileName();
+	                            setText(s + n);
 	                        } else {
 	                        	setText("");
 	                        }
@@ -504,6 +611,24 @@ public class EditorController {
 
 			});
 
+		 	textEditor.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+
+				@Override
+				public void handle(KeyEvent event) {
+					if(event.getCode() == KeyCode.TAB) {
+						String editorText = textEditor.getText();
+						IndexRange r = textEditor.getSelection();
+						String firstPart = editorText.substring(0, r.getStart() );
+						String lastPart = editorText.substring(r.getEnd(), editorText.length());
+						textEditor.setText(firstPart + "\t" + lastPart);
+						textEditor.positionCaret(r.getStart() + 1);
+						event.consume();
+					}
+				}
+
+
+		 	});
+
 			 newItem.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
 			 openItem.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
 			 saveItem.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
@@ -512,5 +637,6 @@ public class EditorController {
 			 cutItem.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
 			 pasteItem.setAccelerator(KeyCombination.keyCombination("Ctrl+V"));
 			 deleteItem.setAccelerator(KeyCombination.keyCombination("Del"));
+		 	 listScrollPane.setFitToWidth(true);
 	}
 }

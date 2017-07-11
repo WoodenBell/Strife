@@ -31,7 +31,7 @@ public class MainApp extends Application {
 	    public void start(Stage primaryStage) {
 	        this.primaryStage = primaryStage;
 	        this.primaryStage.setTitle("Strife");
-	        this.primaryStage.getIcons().add(new Image("file:resources/images/Strife_icon_32.png"));
+	        this.primaryStage.getIcons().add(new Image("file:resources/images/Strife-icon-32.png"));
 	        initializeEditableFiles();
 	        initUI();
 	    }

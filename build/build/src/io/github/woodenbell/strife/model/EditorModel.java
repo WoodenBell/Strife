@@ -8,6 +8,7 @@ import java.util.List;
 
 public class EditorModel {
 	public boolean save(EditItem f) {
+		if(!f.getEditFile().getPath().toFile().exists() || !f.getEditFile().getPath().toFile().isFile()) return false;
 			try {
 				Files.write(f.getEditFile().getPath(), f.getContent());
 				return true;
