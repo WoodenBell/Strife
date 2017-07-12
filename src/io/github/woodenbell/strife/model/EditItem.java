@@ -9,6 +9,8 @@ public class EditItem {
 	private List<String> content;
 	private EditFile f;
 	private String fileName;
+	private String extension;
+	private String onlyFileName;
 
 	public EditItem(EditFile f) {
 		isSaved = true;
@@ -16,6 +18,8 @@ public class EditItem {
 		this.f = f;
 		content = f.getContent();
 		fileName = f.getFileName();
+		extension = "." + fileName.split("\\.")[fileName.split("\\.").length - 1];
+		onlyFileName = fileName.split(extension)[0];
 	}
 	public EditItem(String fileName) {
 		isSaved = false;
@@ -23,6 +27,8 @@ public class EditItem {
 		f = null;
 		content = new ArrayList<String>();
 		this.fileName = fileName;
+		extension = "." + fileName.split("\\.")[fileName.split("\\.").length - 1];
+		onlyFileName = fileName.split(extension)[0];
 	}
 
 	public String getFileName() {
@@ -61,6 +67,20 @@ public class EditItem {
 		this.f = f;
 		content = f.getContent();
 		fileName = f.getFileName();
+		extension = "." + fileName.split("\\.")[fileName.split("\\.").length - 1];
+		onlyFileName = fileName.split(extension)[0];
 		hasFile = true;
+	}
+
+	public String getExtension() {
+		return extension;
+	}
+
+	public String getOnlyFileName() {
+		return onlyFileName;
+	}
+
+	public String toString() {
+		return fileName;
 	}
 	}

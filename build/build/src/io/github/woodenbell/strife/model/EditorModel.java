@@ -22,7 +22,7 @@ public class EditorModel {
 	public boolean saveAs(EditItem f, Path choosenPath) {
 		if(choosenPath.toFile().exists() && choosenPath.toFile().isFile()) {
 			try {
-				Files.write(choosenPath, f.getContent(), StandardOpenOption.CREATE_NEW);
+				Files.write(choosenPath, f.getContent(), StandardOpenOption.TRUNCATE_EXISTING);
 				f.setFileSaved(true);
 				return true;
 			} catch (IOException e) {

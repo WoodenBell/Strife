@@ -14,6 +14,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Optional;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -99,6 +100,9 @@ public class EditorController {
 		d.setTitle("New file");
 		d.setHeaderText("Choose the file name");
 		d.setContentText("");
+		d.setGraphic(new ImageView("file:resources/images/NewFile-icon-64.png"));
+		((Stage) d.getDialogPane().getScene().getWindow()).getIcons()
+		.add(new Image("file:resources/images/Strife-icon-32.png"));
 		ButtonType ok = new ButtonType("Create", ButtonData.OK_DONE);
 		ButtonType cancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 		d.getDialogPane().getButtonTypes().addAll(ok, cancel);
@@ -108,12 +112,12 @@ public class EditorController {
 		TextField fileName = new TextField();
 		ComboBox<String> extension = new ComboBox<String>();
 		ObservableList<String> supportedTypes = FXCollections.observableArrayList();
-		supportedTypes.setAll(".txt", ".md", ".config", ".ini", ".xml", ".html", ".js", ".css",
-				 ".py", ".java");
+		supportedTypes.setAll(".txt", ".md", ".ini", ".xml", ".html", ".js", ".css",
+				 ".py", ".java", ".php");
 		extension.setItems(supportedTypes);
 		extension.getSelectionModel().selectFirst();
-		grid.add(fileName, 0, 0);
-		grid.add(extension, 1, 0);
+		grid.add(fileName, 0, 1);
+		grid.add(extension, 1, 1);
 		d.getDialogPane().setContent(grid);
 		d.setResultConverter(dialogButton -> {
 			if(dialogButton == ok) {
@@ -162,8 +166,12 @@ public class EditorController {
 				 new FileChooser.ExtensionFilter("JAVA files (*.java)", "*.java");
 		 FileChooser.ExtensionFilter pyFilter =
 				 new FileChooser.ExtensionFilter("Python modules (*.py)", "*.py");
+		 FileChooser.ExtensionFilter xmlFilter =
+				 new FileChooser.ExtensionFilter("XML documents (*.xml)", "*.xml");
+		 FileChooser.ExtensionFilter iniFilter =
+				 new FileChooser.ExtensionFilter("INI files (*.ini)", "*.ini");
 		 fc.getExtensionFilters().addAll(allFilter, txtFilter, mdFilter, cssFilter, jsFilter, htmlFilter, jsonFilter,
-				 phpFilter, javaFilter, pyFilter);
+				 phpFilter, javaFilter, pyFilter, xmlFilter, iniFilter);
 		f = fc.showOpenDialog(new Stage());
 		if(f == null) return;
 		loadFile(model.load(Paths.get(f.getAbsolutePath())));
@@ -373,26 +381,45 @@ public class EditorController {
 		FileChooser.ExtensionFilter allFilter =
 				 new FileChooser.ExtensionFilter("All files", "*");
 		 FileChooser.ExtensionFilter txtFilter =
-				 new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+				 new FileChooser.ExtensionFilter("TXT file (*.txt)", "*.txt");
 		 FileChooser.ExtensionFilter mdFilter =
-				 new FileChooser.ExtensionFilter("Markdown files (*.md)", "*.md");
+				 new FileChooser.ExtensionFilter("Markdown file (*.md)", "*.md");
 		 FileChooser.ExtensionFilter cssFilter =
-				 new FileChooser.ExtensionFilter("CSS files (*.css)", "*.css");
+				 new FileChooser.ExtensionFilter("CSS file (*.css)", "*.css");
 		 FileChooser.ExtensionFilter jsFilter =
-				 new FileChooser.ExtensionFilter("Javascript files (*.js)", "*.js");
+				 new FileChooser.ExtensionFilter("Javascript file (*.js)", "*.js");
 		 FileChooser.ExtensionFilter htmlFilter =
-				 new FileChooser.ExtensionFilter("HTML documents (*.html)", "*.html");
+				 new FileChooser.ExtensionFilter("HTML document (*.html)", "*.html");
 		 FileChooser.ExtensionFilter jsonFilter =
-				 new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
+				 new FileChooser.ExtensionFilter("JSON file (*.json)", "*.json");
 		 FileChooser.ExtensionFilter phpFilter =
-				 new FileChooser.ExtensionFilter("PHP files (*.php)", "*.php");
+				 new FileChooser.ExtensionFilter("PHP file (*.php)", "*.php");
 		 FileChooser.ExtensionFilter javaFilter =
-				 new FileChooser.ExtensionFilter("JAVA files (*.java)", "*.java");
+				 new FileChooser.ExtensionFilter("JAVA file (*.java)", "*.java");
 		 FileChooser.ExtensionFilter pyFilter =
-				 new FileChooser.ExtensionFilter("Python modules (*.py)", "*.py");
-		 fc.getExtensionFilters().addAll(allFilter, txtFilter, mdFilter, cssFilter, jsFilter, htmlFilter, jsonFilter,
-				 phpFilter, javaFilter, pyFilter);
-		 fc.setInitialFileName(f.getFileName());
+				 new FileChooser.ExtensionFilter("Python module (*.py)", "*.py");
+		 FileChooser.ExtensionFilter xmlFilter =
+				 new FileChooser.ExtensionFilter("XML document (*.xml)", "*.xml");
+		 FileChooser.ExtensionFilter iniFilter =
+				 new FileChooser.ExtensionFilter("INI file (*.ini)", "*.ini");
+		 fc.getExtensionFilters().addAll(allFilter, txtFilter, mdFilter, htmlFilter, cssFilter, jsFilter, jsonFilter,
+				 phpFilter, javaFilter, pyFilter, xmlFilter, iniFilter);
+		 fc.setInitialFileName(f.getOnlyFileName());
+		 HashMap<String, FileChooser.ExtensionFilter> hm = new HashMap<>();
+		 hm.put(".txt", txtFilter);
+		 hm.put(".md", mdFilter);
+		 hm.put(".css", cssFilter);
+		 hm.put(".html", htmlFilter);
+		 hm.put(".js", jsFilter);
+		 hm.put(".java", javaFilter);
+		 hm.put(".php", phpFilter);
+		 hm.put(".json", jsonFilter);
+		 hm.put(".ini", iniFilter);
+		 hm.put(".xml", xmlFilter);
+		 hm.put(".py", pyFilter);
+		 FileChooser.ExtensionFilter filter = hm.get(f.getExtension());
+		 if(filter == null) filter = allFilter;
+		 fc.setSelectedExtensionFilter(filter);
 		 File sf =  fc.showSaveDialog(new Stage());
 		 if(sf == null) return false;
 		 Path p = Paths.get(sf.getAbsolutePath());
@@ -485,36 +512,42 @@ public class EditorController {
 
 	public void loadTextFileToEditor(EditItem f) {
 		isFileTextChanging = true;
-		textEditor.setEditable(true);
-		editList.getSelectionModel().select(app.getEditItems().indexOf(f));
-		textEditor.setText(app.getEditorTexts().get(f));
 		currFile = f;
+		textEditor.setEditable(true);
+		textEditor.setText(app.getEditorTexts().get(f));
+		editList.getSelectionModel().select(app.getEditItems().indexOf(f));
 		isFileTextChanging = false;
 	}
 
 	public void loadTextFileToEditor(EditItem oldFile, EditItem newFile) {
 		isFileTextChanging = true;
 		textEditor.setEditable(true);
-		app.getEditorTexts().put(oldFile, textEditor.getText());
-		editList.getSelectionModel().select(app.getEditItems().indexOf(newFile));
+		app.setEditorText(oldFile, textEditor.getText());
+		//System.out.println("OLd text: " + textEditor.getText());
+		//System.out.println(app.getEditorTexts());
 		textEditor.setText(app.getEditorTexts().get(newFile));
+		editList.getSelectionModel().select(app.getEditItems().indexOf(newFile));
 		currFile = newFile;
 		isFileTextChanging = false;
 	}
 
 	public void loadNewFile(EditItem newFile) {
 		String strContent = "";
-		if(app.getEditItems().contains(newFile)) {
+		for (EditItem i : app.getEditItems()) {
+			if(i.isAFile() == false && i.getFileName().equals(newFile.getFileName())) {
 			Alert warning = new Alert(AlertType.WARNING);
 			warning.setTitle("Open file");
 			warning.setHeaderText("File already exists");
 			warning.setContentText(newFile.getFileName() + " is already open in this editor");
 			warning.show();
 			return;
+			}
 		}
+		if(!textEditor.isEditable()) textEditor.setEditable(true);
 		app.getEditItems().add(newFile);
 		editList.setItems(this.app.getEditItems());
-		app.getEditorTexts().put(newFile, strContent);
+		app.setEditorText(newFile, strContent);
+		//System.out.println("load new file called");
 		if(currFile == null) {
 			textEditor.setEditable(true);
 			loadTextFileToEditor(newFile);
@@ -543,7 +576,7 @@ public class EditorController {
 			}
 			app.getEditItems().add(item);
 			editList.setItems(this.app.getEditItems());
-			app.getEditorTexts().put(item, strContent);
+			app.setEditorText(item, strContent);
 			if(!textEditor.isEditable()) textEditor.setEditable(true);
 			if(currFile == null) {
 				loadTextFileToEditor(item);
@@ -565,7 +598,7 @@ public class EditorController {
 	public void initialize() {
 
 		currFile = null;
-
+		textEditor.setEditable(false);
 		 editList.setCellFactory(new Callback<ListView<EditItem>,  ListCell<EditItem>>(){
 
 	            public ListCell<EditItem> call(ListView<EditItem> p) {
@@ -574,8 +607,8 @@ public class EditorController {
 
 	                    @Override
 	                    protected void updateItem(EditItem t, boolean bln) {
-	                        super.updateItem(t, bln);
-	                        if (t != null) {
+	                    	super.updateItem(t, bln);
+	                    	if (t != null) {
 	                        	String s = t.isFileSaved() ? " " : "*";
 	                        	String n = t.getFileName().length() > 15 ? t.getFileName().substring(0, 16) + "..." : t.getFileName();
 	                            setText(s + n);
@@ -585,7 +618,6 @@ public class EditorController {
 	                    }
 
 	                };
-
 	                return cell;
 	            }
 	        });
@@ -594,9 +626,13 @@ public class EditorController {
 			    @Override
 			    public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
 			        EditItem f = editList.getSelectionModel().getSelectedItem();
-			        if(f != null && !isFileTextChanging)  f.setFileSaved(false);
-			        app.getEditorTexts().put(currFile, newValue);
+			        if(f != null && !isFileTextChanging)  {
+			        f.setFileSaved(false);
+			        //System.out.println("Content changed for: " + currFile);
+			        //System.out.println(newValue);
+			        app.setEditorText(currFile, newValue);
 			        editList.refresh();
+			        }
 			    }
 			});
 		 textEditor.setEditable(false);
@@ -604,8 +640,15 @@ public class EditorController {
 		 editList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EditItem>() {
 			    @Override
 			    public void changed(ObservableValue<? extends EditItem> observable, EditItem oldValue, EditItem newValue) {
-			    	if(oldValue != null && newValue != null && !oldValue.equals(newValue)) loadTextFileToEditor(oldValue, newValue);
-			    	if(oldValue == null && newValue != null && app.getEditItems().size() == 1) loadTextFileToEditor(newValue);
+			    	//System.out.println(oldValue + ";;" + newValue);
+			    	if(oldValue != null && newValue != null && !oldValue.equals(newValue) && !isFileTextChanging){
+			    		loadTextFileToEditor(oldValue, newValue);
+			    		//System.out.println(1);
+			    	}
+			    	if(oldValue == null && newValue != null && app.getEditItems().size() == 1)  {
+			    		loadTextFileToEditor(newValue);
+			    		//System.out.println(2);
+			    	}
 			    }
 
 

@@ -24,7 +24,7 @@ public class MainApp extends Application {
 	    private ObservableList<EditItem> edits;
 	    private HashMap<EditItem, String> editorText;
 	    public final static String author = "WoodenBell";
-	    public final static String version = "1.0";
+	    public final static String version = "1.1";
 	    public final static String authorEmail = "codingcookie@gmail.com";
 
 	    @Override
@@ -46,6 +46,12 @@ public class MainApp extends Application {
 
 	    public HashMap<EditItem, String> getEditorTexts() {
 	    	return editorText;
+	    }
+
+	    public void setEditorText(EditItem k, String v) {
+	    	System.out.println(k + " ::: " + v);
+	    	System.out.println(new Throwable().fillInStackTrace().getStackTrace()[1].getMethodName() + "()");
+	    	editorText.put(k, v);
 	    }
 	    public void initUI() {
 	        try {

@@ -101,24 +101,30 @@
 .scroll-bar .thumb:hover {
 	-fx-background-color: #ecf0f1;
 }
-.list-cell:empty {
-	 -fx-background-color: #f4f5f7;
-}
+
 .list-cell:filled:selected:focused, .list-cell:filled:selected {
     -fx-background-color: #b8c2d3;
     -fx-text-fill: white;
 }
 
-.list-cell {
-    -fx-background-color: #f4f5f7;
+.list-cell:filled {
+    -fx-background-color: #e1e6e8;
 }
-
+.list-cell:empty {
+	 -fx-background-color: #e1e6e8;
+}
 
 .list-cell:filled:hover {
     -fx-background-color: #d0dcef;
     -fx-text-fill: white;
 }
-
+.list-view {
+	 -fx-background-color: #e1e6e8;
+}
 .text-area {
 	-fx-highlight-fill: #4a4ace;
+}
+
+.text-area .content {
+	-fx-background-color: #f7f9f9;
 }
