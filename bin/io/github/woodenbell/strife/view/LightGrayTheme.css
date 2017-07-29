@@ -121,10 +121,3 @@
 .list-view {
 	 -fx-background-color: #e1e6e8;
 }
-.text-area {
-	-fx-highlight-fill: #4a4ace;
-}
-
-.text-area .content {
-	-fx-background-color: #f7f9f9;
-}

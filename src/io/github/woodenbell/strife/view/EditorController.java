@@ -5,6 +5,7 @@ package io.github.woodenbell.strife.view;
 
 
 import io.github.woodenbell.strife.MainApp;
+import io.github.woodenbell.strife.Preferences;
 import io.github.woodenbell.strife.model.EditFile;
 import io.github.woodenbell.strife.model.EditItem;
 import io.github.woodenbell.strife.model.EditorModel;
@@ -23,6 +24,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -283,7 +285,8 @@ public class EditorController {
 		}
 	}
 
-	@FXML private void onCut() {
+	@FXML
+	private void onCut() {
 		Clipboard cb = Clipboard.getSystemClipboard();
 		ClipboardContent cc = new ClipboardContent();
 		String selection = textEditor.getSelectedText();
@@ -593,7 +596,13 @@ public class EditorController {
 
 	}
 
-
+	public void loadPrefs() {
+		Node editorContent = textEditor.lookup(".content");
+		textEditor.setStyle("-fx-highlight-fill: " + Preferences.editorPreferences.get("highlight-fill") + ";\n" +
+				"-fx-text-fill: " + Preferences.editorPreferences.get("text-fill") + ";\n"+ ";\n"+
+				"-fx-font-size: " + Preferences.editorPreferences.get("font-size") + ";\n");
+		editorContent.setStyle("-fx-background-color: " + Preferences.editorPreferences.get("bg-color") );
+	}
 	@FXML
 	public void initialize() {
 
