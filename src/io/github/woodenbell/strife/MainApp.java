@@ -1,5 +1,5 @@
 /*
-* Copyright 2017 WoodenBell
+* Copyright 2017 Gabriel C. Barbosa
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ public class MainApp extends Application {
 	    private Scene scene;
 	    private ObservableList<EditItem> edits;
 	    private HashMap<EditItem, String> editorText;
+
 	    public final static String author = "WoodenBell";
 	    public final static String version = "1.1";
 	    public final static String authorEmail = "codingcookie@gmail.com";
@@ -72,7 +73,7 @@ public class MainApp extends Application {
 	    public void initUI() {
 	        try {
 	            FXMLLoader loader = new FXMLLoader();
-	            loader.setLocation(MainApp.class.getResource("view/ui.fxml"));
+	            loader.setLocation(MainApp.class.getResource("view/UI.fxml"));
 	            ui = (BorderPane) loader.load();
 	            EditorController controller = loader.getController();
 	            Preferences.defaultPreferences();
